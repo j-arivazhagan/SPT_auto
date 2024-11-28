@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation with Live Notifications</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        #terminal {
+            background-color: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Segmentation PT Automation</h1>
+
+    <form id="login-form">
+        <label>Host: <input type="text" name="host"></label>
+        <label>Username: <input type="text" name="username"></label>
+        <label>Port: <input type="number" name="port"></label>
+        <label>Password: <input type="password" name="password"></label>
+        <label>Private Key: <input type="file" name="private_key"></label>
+        <label>Passphrase: <input type="password" name="passphrase"></label>
+        <button type="submit">Login</button>
+    </form>
+
+    <form id="ifconfig-form">
+        <button type="submit">Fetch ifconfig</button>
+    </form>
+
+    <form id="nmap-form">
+        <label>Custom Nmap Command: <input type="text" name="nmap_command" value="nmap -sS localhost"></label>
+        <button type="submit">Run Nmap</button>
+    </form>
+
+    <div id="terminal"></div>
+
+    <script>
+        const socket = io();
+        const terminal = document.getElementById('terminal');
+
+        function addMessage(message) {
+            const div = document.createElement('div');
+            div.textContent = message;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        socket.on('update', (data) => {
+            addMessage(data.message);
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            console.log(result);
+        });
+
+        document.getElementById('ifconfig-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/fetch_ifconfig', { method: 'POST' });
+            const result = await response.json();
+            console.log(result);
+        });
+
+        document.getElementById('nmap-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/run_nmap', {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            console.log(result);
+        });
+    </script>
+</body>
+</html>
