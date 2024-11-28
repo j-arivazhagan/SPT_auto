@@ -28,10 +28,7 @@ Make sure you have Python 3 installed. Install the following packages using `pip
 - **paramiko**: For SSH connections.
 - **Werkzeug**: For secure file uploads.
 
-Install all dependencies with:
-```bash
-pip install -r requirements.txt
-```
+
 
 **Contents of `requirements.txt`:**
 ```text
